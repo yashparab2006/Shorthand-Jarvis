@@ -1,0 +1,26 @@
+# Optional voice extras (NOT installed by default).
+# Jarvis runs fine without these — see notes below.
+
+# PyAudio enables true VAD (silence-detect) listening + mic calibration
+# via speech_recognition.Microphone. Without it, Jarvis falls back to
+# fixed-duration sounddevice recording (works, just less natural).
+#
+# Why not in requirements.txt? On Windows + Python 3.14 there is no
+# prebuilt PyAudio wheel, so pip tries to compile PortAudio from source
+# and fails with "Failed building wheel for PyAudio".
+#
+# Try in this order:
+#
+#   1) Prebuilt wheel via pipwin (easiest on Windows):
+#        pip install pipwin
+#        pipwin install pyaudio
+#
+#   2) Conda (if you use Anaconda/Miniconda):
+#        conda install -c conda-forge pyaudio
+#
+#   3) Manual Gohlke-style wheel (match your Python version + 64-bit):
+#        pip install <downloaded PyAudio-xxx-cp314-win_amd64.whl>
+#
+# If none work on Python 3.14, stay on the sounddevice fallback —
+# everything except VAD still works (Google/Vosk STT, async TTS, wake-word).
+PyAudio

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>J.A.R.V.I.S. // 3D Spatial Holographic Neural Cockpit</title>
+  <!-- Google Fonts: Orbitron, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <!-- Stylesheet: Universal connection for Flask Server and direct file:/// / Live Server -->
+  <link rel="stylesheet" href="/static/css/style.css" id="hudStyles">
+  <script>
+    (function() {
+      var isFileOrAltPort = window.location.protocol === 'file:' || (window.location.port !== '5000' && window.location.port !== '');
+      if (isFileOrAltPort) {
+        var p = (window.location.pathname || '').replace(/\\/g, '/');
+        var link = document.getElementById('hudStyles');
+        if (p.indexOf('/templates/') !== -1) {
+          link.href = '../static/css/style.css';
+        } else if (p.indexOf('/jarvis/web/') !== -1) {
+          link.href = 'static/css/style.css';
+        } else {
+          link.href = 'jarvis/web/static/css/style.css';
+        }
+      }
+    })();
+  </script>
+</head>
+<body class="theme-dark">
+  <!-- Fullscreen 3D Dual-Renderer Canvas Viewport (WebGL + CSS3D) -->
+  <div id="spatial3DViewport" class="spatial-3d-viewport"></div>
+
+  <!-- Holographic Ambient Background Glow -->
+  <div class="hud-ambient-glow"></div>
+  <div class="hud-grid-overlay"></div>
+
+  <!-- Main Spatial HUD Elements Hierarchy -->
+  <div class="jarvis-app-container">
+
+    <!-- 1. TOP VISOR CROWN: BRAND & STATUS BAR -->
+    <header class="hud-header">
+      <div class="header-left">
+        <div class="brand-logo">
+          <div class="brand-icon-hex">
+            <span class="core-dot"></span>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">J.A.R.V.I.S.</span>
+            <span class="brand-subtitle">MARK VII // 3D SPATIAL COCKPIT</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="status-badge" id="hudStatusBadge">
+          <span class="status-pulse-dot"></span>
+          <span class="status-text" id="hudStatusText">SYSTEMS OPERATIONAL</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="hud-clock-widget">
+          <span class="hud-time" id="hudClock">--:--:--</span>
+          <span class="hud-date" id="hudDate">Loading...</span>
+        </div>
+
+        <div class="voice-toggle-wrap">
+          <label class="hud-switch" title="Toggle Voice Output (Spoken responses)">
+            <input type="checkbox" id="toggleVoiceOutput" checked>
+            <span class="slider"></span>
+          </label>
+          <span class="switch-label">VOICE</span>
+        </div>
+
+        <button class="icon-btn" id="btnAudioMute" title="Mute/Unmute Audio SFX">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path fill="currentColor" d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zm-2.5 9.77l-4.5-4.5H3v6h4l4.5 4.5V13zm6.5-1c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. LEFT FLANK WING: TELEMETRY, CONTROLS & LAUNCHPAD -->
+    <aside class="hud-sidebar">
+      <!-- Telemetry Card -->
+      <section class="hud-card telemetry-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <span class="card-badge">LIVE</span>
+            <h3 class="card-title">HARDWARE TELEMETRY</h3>
+          </div>
+          <span class="card-meta" id="telemetryRefreshRate">1.0s</span>
+        </div>
+
+        <div class="metrics-grid">
+          <!-- CPU Metric -->
+          <div class="metric-box">
+            <div class="metric-top">
+              <span class="metric-name">CPU LOAD</span>
+              <span class="metric-value" id="valCpu">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar bar-cyan" id="barCpu" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- RAM Metric -->
+          <div class="metric-box">
+            <div class="metric-top">
+              <span class="metric-name">MEMORY (RAM)</span>
+              <span class="metric-value" id="valRam">0 / 0 GB</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar bar-blue" id="barRam" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Battery Metric -->
+          <div class="metric-box">
+            <div class="metric-top">
+              <span class="metric-name">BATTERY POWER</span>
+              <span class="metric-value" id="valBattery">100%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar bar-emerald" id="barBattery" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <!-- Storage Metric -->
+          <div class="metric-box">
+            <div class="metric-top">
+              <span class="metric-name">STORAGE DRIVE</span>
+              <span class="metric-value" id="valDisk">-- GB Free</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar bar-amber" id="barDisk" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Action Launchpad Card -->
+      <section class="hud-card launcher-card">
+        <div class="card-header">
+          <h3 class="card-title">QUICK LAUNCHPAD</h3>
+        </div>
+
+        <div class="launcher-btn-grid">
+          <button class="launch-btn" data-app="chrome" title="Open Google Chrome">
+            <span class="btn-icon">🌐</span>
+            <span class="btn-text">Chrome</span>
+          </button>
+          <button class="launch-btn" data-app="vscode" title="Open Visual Studio Code">
+            <span class="btn-icon">💻</span>
+            <span class="btn-text">VS Code</span>
+          </button>
+          <button class="launch-btn" data-app="cmd" title="Open Command Prompt">
+            <span class="btn-icon">📟</span>
+            <span class="btn-text">Terminal</span>
+          </button>
+          <button class="launch-btn" data-app="notepad" title="Open Notepad">
+            <span class="btn-icon">📝</span>
+            <span class="btn-text">Notepad</span>
+          </button>
+          <button class="launch-btn" data-cmd="take a screenshot" title="Take a Screenshot">
+            <span class="btn-icon">📸</span>
+            <span class="btn-text">Screenshot</span>
+          </button>
+          <button class="launch-btn" data-drawer="notes" title="Open Quick Notes">
+            <span class="btn-icon">🗒️</span>
+            <span class="btn-text">My Notes</span>
+          </button>
+        </div>
+      </section>
+    </aside>
+
+    <!-- 3. RIGHT FLANK WING: CHAT CONSOLE -->
+    <section class="hud-chat-section">
+      <div class="hud-card chat-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <span class="card-badge">LIVE</span>
+            <h3 class="card-title">NEURAL STREAM</h3>
+          </div>
+        </div>
+
+        <!-- Scrollable Conversation Stream -->
+        <div class="chat-stream-box" id="chatStream" aria-live="polite" aria-label="Conversation Stream">
+          <div class="chat-bubble jarvis-bubble animate-slide-up">
+            <div class="bubble-header">
+              <span class="avatar-tag">● J.A.R.V.I.S.</span>
+              <span class="bubble-time">3D SPATIAL ONLINE</span>
+            </div>
+            <div class="bubble-content">
+              Good day, Sir. All security protocols, spatial holograms, and system engines are fully operational.
+              You can speak via the microphone button, enter natural text commands, or click on the 3D launchpad.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. LOWER COCKPIT TRAY: SUGGESTION CHIPS + INPUT DOCK -->
+    <div class="hud-lower-tray">
+      <!-- Suggestion Chips Row -->
+      <div class="suggestion-chips-row">
+        <button class="chip-btn" data-prompt="What time is it?">⏰ Time & Date</button>
+        <button class="chip-btn" data-prompt="Check battery and cpu status">⚡ Battery & CPU</button>
+        <button class="chip-btn" data-prompt="Calculate 15 percent of 240">🧮 15% of 240</button>
+        <button class="chip-btn" data-prompt="Who was Albert Einstein?">🧠 Einstein Wiki</button>
+        <button class="chip-btn" data-prompt="Tell me a joke">🃏 Joke</button>
+        <button class="chip-btn" data-prompt="Search for quantum computing on google">🔍 Search Google</button>
+      </div>
+
+      <!-- Bottom Command Input Dock -->
+      <div class="hud-input-dock">
+        <div class="input-glow-border">
+          <!-- Voice Record Button -->
+          <button class="mic-action-btn" id="btnMic" title="Click to speak (Voice Recognition)">
+            <svg class="mic-svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path fill="currentColor" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            <span class="mic-pulse-ring"></span>
+          </button>
+
+          <!-- Command Input Field -->
+          <input type="text" id="txtCommand" class="command-input" placeholder="Type a command or ask Jarvis anything... (Press Enter to execute)" autocomplete="off">
+
+          <!-- Send Button -->
+          <button class="send-action-btn" id="btnSend" title="Send Command">
+            <span>SEND</span>
+            <svg class="send-svg" viewBox="0 0 24 24"><path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. SPATIAL MEMO WING: QUICK NOTES -->
+    <div class="hud-drawer-backdrop" id="notesDrawerBackdrop"></div>
+    <div class="hud-drawer" id="notesDrawer">
+      <div class="drawer-header">
+        <h3 class="drawer-title">📝 VOICE NOTES & MEMOS</h3>
+        <button class="drawer-close-btn" id="btnCloseNotes">✕</button>
+      </div>
+      <div class="drawer-body">
+        <div class="drawer-input-row">
+          <input type="text" id="txtNewNote" placeholder="Enter new note text...">
+          <button class="btn-primary" id="btnAddNote">Add Note</button>
+        </div>
+        <div class="notes-list" id="notesListContainer">
+          <p class="empty-note-msg">Loading notes...</p>
+        </div>
+        <button class="btn-danger" id="btnClearAllNotes">Clear All Notes</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 3D Spatial Script Loading Pipeline -->
+  <script id="hudScriptLoader">
+    (function() {
+      var isFileOrAltPort = window.location.protocol === 'file:' || (window.location.port !== '5000' && window.location.port !== '');
+      var baseStatic = '/static/js/';
+      if (isFileOrAltPort) {
+        var p = (window.location.pathname || '').replace(/\\/g, '/');
+        if (p.indexOf('/templates/') !== -1) {
+          baseStatic = '../static/js/';
+        } else if (p.indexOf('/jarvis/web/') !== -1) {
+          baseStatic = 'static/js/';
+        } else {
+          baseStatic = 'jarvis/web/static/js/';
+        }
+      }
+
+      function loadScript(src, fallbackCdn, callback) {
+        var el = document.createElement('script');
+        el.src = src;
+        el.onload = function() {
+          if (callback) callback();
+        };
+        el.onerror = function() {
+          if (fallbackCdn) {
+            console.warn('[3D Loader] Local script failed, falling back to CDN:', fallbackCdn);
+            var elFallback = document.createElement('script');
+            elFallback.src = fallbackCdn;
+            elFallback.onload = function() { if (callback) callback(); };
+            document.body.appendChild(elFallback);
+          } else {
+            console.error('[3D Loader] Failed to load script:', src);
+          }
+        };
+        document.body.appendChild(el);
+      }
+
+      // Sequential Scaffolding Pipeline:
+      // 1. Three.js r128 (core)
+      loadScript(
+        baseStatic + 'three.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+        function() {
+          // 2. Three.js CSS3DRenderer Companion
+          loadScript(baseStatic + 'CSS3DRenderer.js', null, function() {
+            // 3. Decoupled Service Layer
+            loadScript(baseStatic + 'api.js', null, function() {
+              // 4. Decoupled State & Event Bus
+              loadScript(baseStatic + 'state.js', null, function() {
+                // 5. Decoupled Audio & Voice Driver
+                loadScript(baseStatic + 'audio.js', null, function() {
+                  // 6. 3D Spatial Holographic Cockpit Engine
+                  loadScript(baseStatic + 'spatial-hud.js', null, function() {
+                    // 7. Main Integration Coordinator
+                    loadScript(baseStatic + 'main.js', null, function() {
+                      console.log('[J.A.R.V.I.S.] 3D Spatial Holographic Interface Online.');
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+      );
+    })();
+  </script>
+</body>
+</html>

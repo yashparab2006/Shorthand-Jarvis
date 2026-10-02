@@ -1,0 +1,30 @@
+{
+  "system_apps": {
+    "calculator": "calc.exe",
+    "notepad": "notepad.exe",
+    "cmd": "cmd.exe",
+    "command prompt": "cmd.exe",
+    "terminal": "wt.exe",
+    "edge": "msedge.exe",
+    "chrome": "chrome.exe",
+    "explorer": "explorer.exe",
+    "file explorer": "explorer.exe"
+  },
+  "process_names": {
+    "calculator": "CalculatorApp.exe",
+    "notepad": "notepad.exe",
+    "cmd": "cmd.exe",
+    "command prompt": "cmd.exe",
+    "terminal": "WindowsTerminal.exe",
+    "chrome": "chrome.exe",
+    "edge": "msedge.exe",
+    "vscode": "Code.exe",
+    "spotify": "Spotify.exe",
+    "explorer": "explorer.exe",
+    "file explorer": "explorer.exe"
+  },
+  "custom_apps": {
+    "vscode": "Code.exe",
+    "spotify": "Spotify.exe"
+  }
+}

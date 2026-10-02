@@ -1,0 +1,13 @@
+{
+  "direct_sites": {
+    "youtube": "https://www.youtube.com",
+    "google": "https://www.google.com",
+    "github": "https://www.github.com",
+    "gmail": "https://mail.google.com"
+  },
+  "search_engines": {
+    "google": "https://www.google.com/search?q={query}",
+    "youtube": "https://www.youtube.com/results?search_query={query}",
+    "wikipedia": "https://en.wikipedia.org/wiki/Special:Search?search={query}"
+  }
+}

@@ -1,0 +1,18 @@
+psutil
+apscheduler
+sounddevice
+numpy
+SpeechRecognition
+pywin32
+pycaw
+comtypes
+screen-brightness-control
+pyautogui
+vosk
+flask
+customtkinter
+# NOTE: PyAudio is intentionally NOT here. It has no prebuilt wheel for
+# Python 3.14 on Windows, so `pip install PyAudio` tries a source build
+# (needs PortAudio + MSVC) and fails. Jarvis works without it — VAD and
+# mic calibration gracefully fall back to sounddevice. See
+# requirements-optional.txt for the manual install options.

@@ -1,0 +1,30 @@
+{
+  "voice": {
+    "rate": 175,
+    "sample_rate": 16000,
+    "listen_duration": 4.0,
+    "calibrate_duration": 1.0,
+    "vad_enabled": true,
+    "stt": "auto",
+    "vosk_model_path": "models/vosk-en",
+    "wake_words": ["jarvis", "hey jarvis"],
+    "wake_chunk": 2.5,
+    "wake_timeout": 60.0,
+    "tts_async": true,
+    "wakeup_audio": true,
+    "wakeup_text": "Audio check.",
+    "wake_enabled": false
+  },
+  "browser": {
+    "chrome_path": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    "default_search_engine": "google"
+  },
+  "paths": {
+    "app_registry": "config/app_registry.json",
+    "web_registry": "config/web_registry.json",
+    "reminders_file": "config/reminders.json"
+  },
+  "logging": {
+    "level": "INFO"
+  }
+}
